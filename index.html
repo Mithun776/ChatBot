@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #004d40; /* Dark Teal */
+      color: #fff;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #009688; /* Teal */
+    }
+
+    header .title {
+      margin: 0;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    header nav a {
+      color: #b2dfdb; /* Light Teal */
+      text-decoration: none;
+      margin: 0 15px;
+      font-size: 16px;
+    }
+
+    header nav a:hover {
+      color: #e0f2f1; /* Very Light Teal */
+      text-decoration: underline;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      padding: 20px;
+    }
+
+    #chat-container {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      height: 80vh;
+    }
+
+    #chat-history-container {
+      flex-basis: 30%;
+      background-color: #fff;
+      border-radius: 16px 0 0 16px;
+      padding: 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #chat-history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    #chat-history-header .title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #chat-history-header .delete-button {
+  background-color: #dc3545; /* Red */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+#chat-history-header .delete-button:hover {
+  background-color: #bd2130; /* Darker Red */
+}
+
+    #chat-history {
+      flex-grow: 1;
+      overflow-y: auto; /* Add scrollbar */
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      max-height: 600px; /* Set maximum height */
+    }
+
+    #chatbot-container {
+      flex-basis: 70%;
+      background-color: #fff;
+      border-radius: 0 16px 16px 0;
+      padding: 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #chat-output {
+    overflow-y: auto; /* Add scrollbar */
+    max-height: 600px; /* Set maximum height */
+    padding: 20px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+
+  #chatbot-container {
+    overflow-y: auto; /* Add scrollbar */
+    max-height: 600px; /* Set maximum height */
+  }
+
+    #chatbot-header {
+      font-size: 24px;
+      color: #004d40;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .user-message, .bot-message {
+      max-width: 80%;
+      padding: 10px;
+      border-radius: 12px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background-color: #d1ffd1;
+      text-align: right;
+      color: #004d40;
+    }
+
+    .bot-message {
+      align-self: flex-start;
+      background-color: #e0e0e0;
+      text-align: left;
+      color: #004d40;
+    }
+
+    form {
+      display: flex;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    input {
+      flex-grow: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      color: #004d40;
+    }
+
+    button {
+        background-color: #28a745; /* Green */
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-left: 10px;
+      }
+
+      button:hover {
+        background-color: #218838; /* Darker green */
+      }
+
+      #loader {
+        display: none; /* Hide by default */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      }
+
+      footer {
+        background-color: #004d40; /* Dark Teal */
+        color: #fff;
+        padding: 10px 20px;
+        text-align: center;
+        border-top: 2px solid #009688; /* Teal */
+      }
+
+      @media (max-width: 768px) {
+        #chat-container {
+          flex-direction: column;
+        }
+
+        #chat-history-container {
+          flex-basis: 100%;
+          border-radius: 16px 16px 0 0;
+        }
+
+        #chatbot-container {
+          flex-basis: 100%;
+          border-radius: 0 0 16px 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="title">ChatBot Page</div>
+      <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+      </nav>
+    </header>
+
+    <main>
+      <div id="chat-container">
+        <div id="chat-history-container">
+          <div id="chat-history-header">
+            <div class="title">Chat History</div>
+            <button class="delete-button" id="delete-history">Delete History</button>
+          </div>
+          <div id="chat-history"></div>
+        </div>
+        <div id="chatbot-container">
+          <h1 id="chatbot-header">Chatbot</h1>
+          <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Enter your message" required>
+            <button type="submit">Send</button>
+          </form>
+          <div id="chat-output"></div>
+        </div>
+      </div>
+      <div id="loader">
+        <img src="loader.gif" width="100px" alt="Loading...">
+      </div>
+    </main>
+
+    <footer>
+      <p>&copy; Copyrights Reserved 2024</p>
+    </footer>
+
+    <script>
+      const chatHistory = document.getElementById('chat-history');
+      const userInput = document.getElementById('user-input');
+      const form = document.getElementById('chat-form');
+      const chatOutput = document.getElementById('chat-output');
+      const deleteHistoryButton = document.getElementById('delete-history');
+      const chatHistoryContainer = document.getElementById('chat-history-container');
+
+      // Load chat history from local storage
+      function loadChatHistory() {
+        const storedHistory = localStorage.getItem('chatHistory');
+        if (storedHistory) {
+          chatHistory.innerHTML = storedHistory;
+        }
+      }
+
+      // Save chat history to local storage
+      function saveChatHistory() {
+        localStorage.setItem('chatHistory', chatHistory.innerHTML);
+      }
+
+      async function sendMessage() {
+        const userMessage = userInput.value;
+        userInput.value = ''; // Clear input field
+        try {
+          const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userInput: userMessage }),
+          });
+
+          const data = await response.json();
+          const botMessage = data.response;
+
+          // Add chat message to the chat history
+          chatHistory.innerHTML += `<div class="user-message">${userMessage}</div>`;
+          chatHistory.innerHTML += `<div class="bot-message">${botMessage}</div>`;
+
+          // Add chat message to the chat output
+          chatOutput.innerHTML += `<div class="user-message">${userMessage}</div>`;
+          chatOutput.innerHTML += `<div class="bot-message">${botMessage}</div>`;
+
+          // Scroll to the bottom of the chat history
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+
+          // Save the updated chat history
+          saveChatHistory();
+        } catch (error) {
+          console.error('Error:', error);
+          // Handle errors gracefully, e.g., display an error message to the user
+        }
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent form submission
+        const loader = document.getElementById('loader');
+        loader.style.display = 'block'; // Show the loader
+        sendMessage().finally(() => {
+          loader.style.display = 'none'; // Hide the loader after the message is sent
+        });
+      });
+
+      deleteHistoryButton.addEventListener('click', () => {
+        // Confirm deletion
+        if (confirm('Are you sure you want to delete the chat history?')) {
+          // Clear chat history
+          chatHistory.innerHTML = '';
+          // Clear local storage
+          localStorage.removeItem('chatHistory');
+          // Clear chat output
+          chatOutput.innerHTML = '';
+        }
+      });
+
+      // Initial load of chat history
+      loadChatHistory();
+    </script>
+  </body>
+</html>
